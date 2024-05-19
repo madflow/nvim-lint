@@ -1,18 +1,18 @@
-local bin = 'phpstan'
+local bin = "phpstan"
 
 return {
-  cmd = function ()
-    local local_bin = vim.fn.fnamemodify('vendor/bin/' .. bin, ':p')
+  cmd = function()
+    local local_bin = vim.fn.fnamemodify("vendor/bin/" .. bin, ":p")
     return vim.loop.fs_stat(local_bin) and local_bin or bin
   end,
   args = {
-    'analyze',
-    '--error-format=json',
-    '--no-progress',
+    "analyze",
+    "--error-format=json",
+    "--no-progress",
   },
   ignore_exitcode = true,
   parser = function(output, bufnr)
-    if output == nil then
+    if vim.trim(output) == "" or output == nil then
       return {}
     end
 
@@ -26,7 +26,7 @@ return {
 
     for _, message in ipairs(file.messages or {}) do
       table.insert(diagnostics, {
-        lnum = message.line - 1,
+        lnum = type(message.line) == "number" and (message.line - 1) or 0,
         col = 0,
         message = message.message,
         source = bin,
